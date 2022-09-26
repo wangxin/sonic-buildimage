@@ -21,7 +21,6 @@ RUN apt-get update && apt-get install -y build-essential \
                                          psmisc \
                                          python \
                                          python-dev \
-                                         python-scapy \
                                          python-pip \
                                          python3-pip \
                                          python3-venv \
@@ -33,10 +32,14 @@ RUN apt-get update && apt-get install -y build-essential \
                                          telnet \
                                          vim
 
-RUN pip install setuptools==44.1.1
-RUN pip install cffi==1.10.0 \
+RUN pip install --upgrade --ignore-installed pip setuptools wheel
+RUN pip install allure-pytest==2.8.22 \
+                ansible==2.8.12 \
+                celery[redis]==4.4.7 \
+                cffi==1.12.3 \
                 contextlib2==0.6.0.post1 \
                 cryptography==3.3.2 \
+                dpkt \
                 "future>=0.16.0" \
                 gitpython \
                 ipaddr \
@@ -46,7 +49,9 @@ RUN pip install cffi==1.10.0 \
                 snappi[ixnetwork,convergence]==0.7.44 \
                 jinja2==2.7.2 \
                 jsonpatch \
+                lazy-object-proxy==1.6.0 \
                 lxml \
+                msrest==0.6.21 \
                 natsort \
                 netaddr \
                 netmiko==2.4.2 \
@@ -57,32 +62,26 @@ RUN pip install cffi==1.10.0 \
                 psutil \
                 pyasn1==0.1.9 \
                 pyfiglet \
-                lazy-object-proxy==1.6.0 \
                 pylint==1.8.1 \
                 pyro4 \
                 pysnmp==4.2.5 \
-                pytest-repeat \
-                pytest-html \
-                pytest-xdist==1.28.0 \
+                pysubnettree \
                 pytest==4.6.5 \
+                pytest-ansible \
+                pytest-html \
+                pytest-repeat \
+                pytest-xdist==1.28.0 \
                 redis \
                 requests \
+                retry \
                 rpyc \
+                scapy==2.4.5 \
                 six \
                 tabulate \
                 statistics \
                 textfsm==1.1.2 \
-                virtualenv \
-                retry \
                 thrift==0.11.0 \
-                allure-pytest==2.8.22 \
-                celery[redis]==4.4.7 \
-                msrest==0.6.21 \
-    && git clone https://github.com/p4lang/scapy-vxlan.git \
-    && cd scapy-vxlan \
-    && python setup.py install \
-    && cd .. \
-    && rm -fr scapy-vxlan \
+                virtualenv \
     && wget https://github.com/nanomsg/nanomsg/archive/1.0.0.tar.gz \
     && tar xvfz 1.0.0.tar.gz \
     && cd nanomsg-1.0.0    \
@@ -94,9 +93,7 @@ RUN pip install cffi==1.10.0 \
     && cd ../..            \
     && rm -fr nanomsg-1.0.0 \
     && rm -f 1.0.0.tar.gz  \
-    && pip install nnpy    \
-    && pip install dpkt    \
-    && pip install scapy==2.4.5 --upgrade
+    && pip install nnpy
 
 # Install docker-ce-cli
 RUN apt-get update                  \
@@ -114,8 +111,6 @@ RUN apt-get update                  \
 # Install Azure CLI
 RUN curl -sL https://aka.ms/InstallAzureCLIDeb | bash
 
-RUN pip install wheel==0.33.6
-
 ## Copy and install sonic-mgmt docker dependencies
 COPY \
 {% for deb in docker_sonic_mgmt_debs.split(' ') -%}
@@ -127,18 +122,6 @@ RUN dpkg -i \
 {% for deb in docker_sonic_mgmt_debs.split(' ') -%}
 debs/{{ deb }}{{' '}}
 {%- endfor %}
-
-RUN pip install ansible==2.8.12
-
-RUN pip install pysubnettree
-
-# Install pytest-ansible module with 'become', 'become_user' parameters support
-RUN git clone https://github.com/ansible/pytest-ansible.git \
-    && cd pytest-ansible \
-    && git checkout d33c025f070a9c870220a157cc5a999fda68de44 \
-    && python setup.py install \
-    && cd .. \
-    && rm -fr pytest-ansible
 
 RUN mkdir /var/run/sshd
 EXPOSE 22
