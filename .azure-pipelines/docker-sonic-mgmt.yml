@@ -95,6 +95,7 @@ stages:
   jobs:
     - template: .azure-pipelines/pr_test_template.yml@sonic-mgmt
       parameters:
+        CHECKOUT_SONIC_MGMT: true
         OVERRIDE_PARAMS:
           SETUP_CONTAINER_PARAMS: "-i ${{ parameters.registry_url }}/docker-sonic-mgmt:lastbuild"
 
