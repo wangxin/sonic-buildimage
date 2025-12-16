@@ -36,7 +36,7 @@ parameters:
   type: string
   default: sonicdev
 
-# stages:
+stages:
 # - stage: Build
 #   jobs:
 #   - job: Build
