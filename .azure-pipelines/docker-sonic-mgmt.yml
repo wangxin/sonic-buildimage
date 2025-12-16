@@ -89,6 +89,9 @@ stages:
   # condition: and(succeeded(), in(dependencies.Build.result, 'Succeeded'))
   variables:
   - group: SONiC-Elastictest
+  - name: BUILD_BRANCH
+    # value: $(Build.SourceBranchName)
+    value: 'master'
   jobs:
     - template: .azure-pipelines/pr_test_template.yml@sonic-mgmt
       parameters:
