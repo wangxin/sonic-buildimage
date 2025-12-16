@@ -85,7 +85,7 @@ stages:
 #         tags: lastbuild
 
 - stage: Test
-  dependsOn: Build
+  # dependsOn: Build
   # condition: and(succeeded(), in(dependencies.Build.result, 'Succeeded'))
   variables:
   - group: SONiC-Elastictest
